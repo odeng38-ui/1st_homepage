@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>실손의료비 세대별 보장 비교 서비스</title>
+    <!-- Google Fonts for Premium Look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Marked.js for Markdown rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="background-globes">
+        <div class="globe globe-1"></div>
+        <div class="globe globe-2"></div>
+        <div class="globe globe-3"></div>
+    </div>
+
+    <div class="container">
+        <header class="main-header">
+            <div class="header-content">
+                <h1>🏥 실손의료비 세대별 분석</h1>
+                <p class="subtitle">나의 실손보험 세대를 확인하고, 5세대 전환 시 유불리를 AI가 분석해드립니다.</p>
+            </div>
+        </header>
+        
+        <!-- 입력 영역 -->
+        <div class="card input-section">
+            <div class="input-group">
+                <label for="joinDate">최초 가입일을 선택하세요</label>
+                <div class="date-input-wrapper">
+                    <input 
+                        type="date" 
+                        id="joinDate" 
+                        placeholder="YYYY-MM-DD"
+                        value="2015-06-15"
+                    />
+                </div>
+                <p class="hint">날짜를 모르시면 대략적인 연도를 입력해보세요.</p>
+            </div>
+            <button onclick="analyzeGeneration()" class="primary-button">
+                <span class="btn-text">무료 분석 시작하기</span>
+                <span class="btn-icon">✨</span>
+            </button>
+        </div>
+        
+        <!-- 로딩 상태 -->
+        <div id="loading" class="loading hidden">
+            <div class="spinner"></div>
+            <p>보험 데이터를 분석하고 있습니다... ⏳</p>
+        </div>
+        
+        <!-- 결과 영역 -->
+        <div id="result" class="result-section hidden">
+            <div class="generation-badge-container">
+                <div class="generation-badge" id="generationBadge">
+                    <!-- 세대 정보 표시 -->
+                </div>
+            </div>
+            
+            <div class="card explanation-card">
+                <div class="explanation-content" id="explanationContent">
+                    <!-- LLM 설명 표시 (마크다운 포맷) -->
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <!-- <button class="secondary-button" onclick="downloadResult()">결과 PDF 다운로드</button> -->
+                <!-- <button class="secondary-button" onclick="shareResult()">카카오톡 공유</button> -->
+                <button class="outline-button" onclick="resetForm()">다시 분석하기</button>
+            </div>
+        </div>
+        
+        <!-- 에러 메시지 -->
+        <div id="error" class="error-toast hidden"></div>
+        
+        <footer class="main-footer">
+            <p>※ 본 서비스의 분석 결과는 일반적인 기준이며, 정확한 보장 내용은 가입하신 보험사 약관을 따릅니다.</p>
+        </footer>
+    </div>
+    
+    <script src="main.js"></script>
+</body>
+</html>
