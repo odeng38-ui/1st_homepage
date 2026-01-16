@@ -1,3 +1,86 @@
+// --- Modal Logic ---
+function openSettings() {
+    document.getElementById('settingsModal').classList.remove('hidden');
+    loadSavedKeys();
+}
+
+function closeSettings() {
+    document.getElementById('settingsModal').classList.add('hidden');
+    document.getElementById('testStatus').classList.add('hidden');
+}
+
+async function loadSavedKeys() {
+    try {
+        const response = await fetch('/api/get-keys');
+        const data = await response.json();
+        if (data.google) document.getElementById('googleKey').value = data.google;
+        if (data.openai) document.getElementById('openaiKey').value = data.openai;
+        if (data.anthropic) document.getElementById('anthropicKey').value = data.anthropic;
+    } catch (err) {
+        console.error('Failed to load keys:', err);
+    }
+}
+
+async function saveSettings() {
+    const keys = {
+        google: document.getElementById('googleKey').value,
+        openai: document.getElementById('openaiKey').value,
+        anthropic: document.getElementById('anthropicKey').value
+    };
+
+    try {
+        const response = await fetch('/api/save-keys', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(keys)
+        });
+        const result = await response.json();
+        if (response.ok) {
+            showStatus('성공적으로 저장되었습니다.', 'success');
+            setTimeout(closeSettings, 1000);
+        } else {
+            showStatus(result.error || '저장 중 오류가 발생했습니다.', 'error');
+        }
+    } catch (err) {
+        showStatus('서버 연결 실패', 'error');
+    }
+}
+
+async function testConnection(provider) {
+    const key = document.getElementById(`${provider}Key`).value;
+    if (!key) {
+        showStatus('키를 입력해주세요.', 'error');
+        return;
+    }
+
+    showStatus(`${provider} 연결 테스트 중...`, '');
+
+    try {
+        const response = await fetch('/api/test-connection', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ provider, key })
+        });
+        const result = await response.json();
+        if (response.ok) {
+            showStatus(`${provider} 연결 성공! ✨`, 'success');
+        } else {
+            showStatus(`${provider} 연결 실패: ${result.error}`, 'error');
+        }
+    } catch (err) {
+        showStatus('연결 테스트 중 오류 발생', 'error');
+    }
+}
+
+function showStatus(message, type) {
+    const statusDiv = document.getElementById('testStatus');
+    statusDiv.textContent = message;
+    statusDiv.className = 'test-status'; // Reset classes
+    if (type) statusDiv.classList.add(`status-${type}`);
+    statusDiv.classList.remove('hidden');
+}
+
+// --- Analysis Logic ---
 async function analyzeGeneration() {
     const joinDateInput = document.getElementById('joinDate');
     const joinDate = joinDateInput.value;
