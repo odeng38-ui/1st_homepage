@@ -121,6 +121,42 @@ SYSTEM_PROMPT = """
 - 각 섹션은 이모지를 적절히 섞어 시각적으로 깔끔하게 구성하세요.
 """
 
+def test_llm_connection(provider, key):
+    """
+    API 연결 테스트 함수
+    """
+    try:
+        if provider == 'google':
+            import google.generativeai as genai
+            genai.configure(api_key=key)
+            model = genai.GenerativeModel('gemini-1.5-flash')
+            response = model.generate_content("ping")
+            return True, "연결 성공"
+        
+        elif provider == 'openai':
+            from openai import OpenAI
+            client = OpenAI(api_key=key)
+            client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[{"role": "user", "content": "ping"}],
+                max_tokens=5
+            )
+            return True, "연결 성공"
+            
+        elif provider == 'anthropic':
+            import anthropic
+            client = anthropic.Anthropic(api_key=key)
+            client.messages.create(
+                model="claude-3-5-haiku-20241022",
+                max_tokens=10,
+                messages=[{"role": "user", "content": "ping"}]
+            )
+            return True, "연결 성공"
+            
+        return False, "알 수 없는 프로바이더"
+    except Exception as e:
+        return False, str(e)
+
 def generate_explanation(join_date_str):
     # Step 1: 세대 판정
     gen_num, gen_name = get_generation_from_join_date(join_date_str)
